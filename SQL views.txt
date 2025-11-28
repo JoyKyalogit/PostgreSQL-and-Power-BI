@@ -1,0 +1,56 @@
+CREATE VIEW Appointments_Enriched AS
+SELECT
+    A."AppointmentID",
+    A."PatientID",
+    A."DoctorID",
+    A."AppointmentDate",
+    A."Status", 
+    P."FirstName" AS PatientFirstName,
+    P."LastName" AS PatientLastName,
+    D."FirstName" AS DoctorFirstName,
+    D."LastName" AS DoctorLastName,
+    D."Specialization",
+    A."AppointmentDate"::DATE AS AppointmentPureDate
+FROM
+    appointments A
+JOIN
+    patients P ON A."PatientID" = P."PatientID"
+JOIN
+    doctors D ON A."DoctorID" = D."DoctorID";
+
+
+
+
+
+CREATE VIEW Patient_Balances AS
+SELECT
+    AD."PatientID",
+    SUM(B."TotalAmount") AS TotalBilled, 
+    SUM(B."PaidAmount") AS TotalPaid,
+    SUM(B."TotalAmount" - B."PaidAmount") AS TotalOutstanding 
+FROM
+    admissions AD
+JOIN
+    bills B ON AD."AdmissionID" = B."AdmissionID"
+GROUP BY
+    AD."PatientID";
+
+
+
+
+
+CREATE VIEW Doctor_Monthly_Metrics AS
+SELECT
+    A."DoctorID",
+    TO_CHAR(A."AppointmentDate", 'YYYY-MM') AS AppointmentMonth,
+    COUNT(A."AppointmentID") AS TotalAppointments,
+    SUM(CASE WHEN A."Status" = 'Cancelled' THEN 1 ELSE 0 END) AS CancelledAppointments,
+    (
+        SUM(CASE WHEN A."Status" = 'Cancelled' THEN 1 ELSE 0 END)::NUMERIC /
+        COUNT(A."AppointmentID")::NUMERIC
+    ) * 100 AS CancellationRate
+FROM
+    appointments A
+GROUP BY
+    A."DoctorID",
+    AppointmentMonth;
