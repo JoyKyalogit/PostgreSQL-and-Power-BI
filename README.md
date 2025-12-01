@@ -20,7 +20,6 @@ This dashboard is powered by data sourced from a **PostgreSQL Database**.
 | **Data Source Type** | PostgreSQL Database | Connection uses standard port and login. |
 | **Connection Method** | Import (via SQL Views) | Data is pulled into the Power BI model. |
 | **Gateway Requirement** | **On-premises Data Gateway** | The Gateway is required for scheduled refresh, as the database is not publicly hosted. |
-| **Credentials** | **Username/Password** | (No credentials stored here. Managed securely via the Power BI Service Data Gateway.) |
 
 ---
 
